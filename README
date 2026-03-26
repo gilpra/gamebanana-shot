@@ -1,0 +1,9 @@
+This is CLI app project for downloading screenshots/preview mod from gamebanana.com
+This project was built using Python
+Why i built this? I dont know
+
+How to use:
+You can input url mods or user from gamebanana
+If You input url user this app will download all screenshots/preview from all mods user has uploaded 
+
+app.py <url>
