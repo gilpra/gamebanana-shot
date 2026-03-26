@@ -1,5 +1,7 @@
 import argparse
+from os.path import exists
 import requests
+from pathlib import Path
 
 # Parse url from input user
 def parse_url(url):
@@ -45,6 +47,29 @@ def get_url_preview_mod(id):
         imgs_url[0]["url_preview"].append(f"{base_url}/{url.get("_sFile")}")
 
     return imgs_url
+
+# Download file from url
+def download_file(url, filename):
+    with requests.get(url, stream=True, timeout=30) as response:
+        response.raise_for_status() # Stop if return error
+        total_size = int(response.headers.get("content-length", 0))
+        downloaded = 0
+        bar_width = 30
+
+        with open(filename, "wb") as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                if not chunk:
+                    continue
+
+                file.write(chunk)
+                downloaded += len(chunk)
+
+                if total_size:
+                    percent = downloaded / total_size
+                    filled = int(bar_width * percent)
+                    bar = "#" * filled + "-" * (bar_width - filled)
+
+                    print(f"\r{filename} [{bar}] {percent:.0%}", end="", flush=True)
 
 def main():
     imgs_url = {}
