@@ -69,7 +69,8 @@ def download_file(url, filename):
                     filled = int(bar_width * percent)
                     bar = "#" * filled + "-" * (bar_width - filled)
 
-                    print(f"\r{filename} [{bar}] {percent:.0%}", end="", flush=True)
+                    print(f"\r{filename.split("/")[-1]} [{bar}] {percent:.0%}", end="", flush=True)
+            print("")
 
 def main():
     imgs_url = {}
@@ -88,6 +89,24 @@ def main():
         print("run func for members")
     else:
         parse.error("Input URL not valid")
+
+    # Create folder
+    folder = Path("gamebanana")
+    folder.mkdir(exist_ok=True)
+
+    # Download all image mod
+    for img_url in imgs_url:
+        name_mod = img_url.get("name")
+        folder_mod = Path(f"{folder}/{name_mod}")
+        folder_mod.mkdir(exist_ok=True)
+        
+        print(f"Name Mod: {name_mod}")
+        for url in img_url.get("url_preview", []):
+            filename = f"{folder_mod}/{url.split("/")[-1]}"
+
+            download_file(url, filename)
+        print("\n")
+
 
 if __name__ == "__main__":
     main()
