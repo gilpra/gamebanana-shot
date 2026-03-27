@@ -24,7 +24,8 @@ def parse_url(url):
 
 # Get all url image from mods
 def get_url_preview_mod(id):
-    url = f"https://gamebanana.com/apiv11/Mod/{id}/ProfilePage"
+    url = f"https://gamebanana.com/apiv13/Mod/{id}/ProfilePage"
+    imgs_url = {}
 
     # Get data from api gamebanana
     try:
@@ -36,7 +37,7 @@ def get_url_preview_mod(id):
 
     # Get preview file name
     mods_name = data_mods.get("_sName")
-    imgs_data = data_mods.get("_aPreviewMedia").get("_aImages")
+    imgs_data = data_mods.get("_aPreviewContent").get("screenshots")
 
     imgs_url = [{
         "name": mods_name,
