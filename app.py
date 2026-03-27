@@ -43,11 +43,11 @@ def get_url_preview_mod(id):
         "name": mods_name,
         "url_preview": []
     }
-    for index, url in enumerate(imgs_data):
+    for url in imgs_data:
         base_url = "https://images.gamebanana.com/img/ss/mods"
         img_data["url_preview"].append(f"{base_url}/{url.get("_sFile")}")
 
-    imgs_url[len(imgs_url)] = img_data.copy()
+    imgs_url[0] = img_data.copy()
     return imgs_url
 
 # Get all url image from user mod upload
