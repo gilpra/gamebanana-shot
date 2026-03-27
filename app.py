@@ -52,9 +52,7 @@ def get_url_preview_mod(id):
 
 # Get all url image from user mod upload
 def get_all_url_preview_mod_user(id):
-    # User v11 api because because the api still provides 
-    # all the preview images for the mod
-    base_url = f"https://gamebanana.com/apiv11/Member/{id}/SubFeed"
+    base_url = f"https://gamebanana.com/apiv13/Member/{id}/SubFeed"
     imgs_url = {}
 
     # Get data user from api
@@ -85,20 +83,11 @@ def get_all_url_preview_mod_user(id):
         # Looping based on mod per page
         for data_mod in data_mod_per_page:
             # Get preview file name
-            mods_name = data_mod.get("_sName")
-            imgs_data = data_mod.get("_aPreviewMedia").get("_aImages")
+            id_mod = data_mod.get("_idRow")
 
-            img_data = {
-                "name": mods_name,
-                "url_preview": []
-            }
+            img_data = get_url_preview_mod(id_mod)
 
-            # Add url preview mod to object img_data
-            for url in imgs_data:
-                base_img_url = "https://images.gamebanana.com/img/ss/mods"
-                img_data["url_preview"].append(f"{base_img_url}/{url.get("_sFile")}")
-
-            imgs_url[len(imgs_url)] = img_data.copy()
+            imgs_url[len(imgs_url)] = img_data[0].copy()
 
     return imgs_url
 
