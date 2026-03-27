@@ -50,6 +50,59 @@ def get_url_preview_mod(id):
     imgs_url[len(imgs_url)] = img_data.copy()
     return imgs_url
 
+# Get all url image from user mod upload
+def get_all_url_preview_mod_user(id):
+    # User v11 api because because the api still provides 
+    # all the preview images for the mod
+    base_url = f"https://gamebanana.com/apiv11/Member/{id}/SubFeed"
+    imgs_url = {}
+
+    # Get data user from api
+    try:
+        response = requests.get(base_url)
+        response.raise_for_status()
+        data_user = response.json()
+    except requests.RequestException as error:
+        print.error(error)
+
+    # Get information about user
+    total_mods = data_user.get("_aMetadata").get("_nRecordCount")
+    per_pages = 10
+    total_pages = ceil(total_mods / per_pages)
+
+    # Looping based on total_pages
+    for index in range(total_pages):
+        url = f"{base_url}?_nPage={index+1}&_nPerpage={per_pages}"
+
+        # Get data per page from api
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data_mod_per_page = response.json().get("_aRecords")
+        except requests.RequestException as error:
+            print.error(error)
+
+        # Looping based on mod per page
+        for data_mod in data_mod_per_page:
+            # Get preview file name
+            mods_name = data_mod.get("_sName")
+            imgs_data = data_mod.get("_aPreviewMedia").get("_aImages")
+
+            img_data = {
+                "name": mods_name,
+                "url_preview": []
+            }
+
+            # Add url preview mod to object img_data
+            for url in imgs_data:
+                base_img_url = "https://images.gamebanana.com/img/ss/mods"
+                img_data["url_preview"].append(f"{base_img_url}/{url.get("_sFile")}")
+
+            imgs_url[len(imgs_url)] = img_data.copy()
+
+    return imgs_url
+
+
 # Download file from url
 def download_file(url, filename):
     with requests.get(url, stream=True, timeout=30) as response:
@@ -88,7 +141,7 @@ def main():
     if type_url == "mods":
         imgs_url = get_url_preview_mod(id_url)
     elif type_url == "members":
-        print("run func for members")
+        imgs_url = get_all_url_preview_mod_user(id_url)
     else:
         parse.error("Input URL not valid")
 
