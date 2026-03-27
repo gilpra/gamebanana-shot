@@ -1,7 +1,7 @@
 import argparse
-from os.path import exists
 import requests
 from pathlib import Path
+from math import ceil
 
 # Parse url from input user
 def parse_url(url):
@@ -39,14 +39,15 @@ def get_url_preview_mod(id):
     mods_name = data_mods.get("_sName")
     imgs_data = data_mods.get("_aPreviewContent").get("screenshots")
 
-    imgs_url = [{
+    img_data = {
         "name": mods_name,
         "url_preview": []
-    }]
-    for url in imgs_data:
+    }
+    for index, url in enumerate(imgs_data):
         base_url = "https://images.gamebanana.com/img/ss/mods"
-        imgs_url[0]["url_preview"].append(f"{base_url}/{url.get("_sFile")}")
+        img_data["url_preview"].append(f"{base_url}/{url.get("_sFile")}")
 
+    imgs_url[len(imgs_url)] = img_data.copy()
     return imgs_url
 
 # Download file from url
@@ -96,18 +97,17 @@ def main():
     folder.mkdir(exist_ok=True)
 
     # Download all image mod
-    for img_url in imgs_url:
+    for index in range(len(imgs_url)):
+        img_url = imgs_url[index]
         name_mod = img_url.get("name")
         folder_mod = Path(f"{folder}/{name_mod}")
         folder_mod.mkdir(exist_ok=True)
-        
+
         print(f"Name Mod: {name_mod}")
         for url in img_url.get("url_preview", []):
             filename = f"{folder_mod}/{url.split("/")[-1]}"
 
             download_file(url, filename)
-        print("\n")
-
 
 if __name__ == "__main__":
     main()
